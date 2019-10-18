@@ -40,3 +40,25 @@ from sklearn.linear_model import LinearRegression
 regressor = LinearRegression()
 regressor.fit(X_train, y_train)
 y_pred = regressor.predict(X_test)
+
+
+# backward elimination
+import statsmodels.regression.linear_model as sm
+
+def backwardElimination(X, sl):
+    epochs = len(X[0])
+    for i in range(0, epochs):
+        regressor_OLS = sm.OLS(y, X).fit()
+        varWithMaxPValue = max(regressor_OLS.pvalues).astype(float)
+        if varWithMaxPValue > sl:
+            for j in range(0, epochs - 1):
+                if (regressor_OLS.pvalues[j].astype(float) == varWithMaxPValue):
+                    X = np.delete(X, j, 1)
+    regressor_OLS.summary()
+    return X
+
+SL = 0.05
+X_opt = X[:, [0, 1, 2, 3, 4]]
+X_Modeled = backwardElimination(X_opt, SL)
+
+
